@@ -1,65 +1,55 @@
-import { currentUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+"use client";
 
-import Searchbar from "@/components/shared/Searchbar";
-import Pagination from "@/components/shared/Pagination";
-import CommunityCard from "@/components/cards/CommunityCard";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-import { fetchUser } from "@/lib/actions/user.actions";
-import { fetchCommunities } from "@/lib/actions/community.actions";
+import { Button } from "../ui/button";
 
-async function Page({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | undefined };
-}) {
-  const user = await currentUser();
-  if (!user) return null;
+interface Props {
+  id: string;
+  name: string;
+  username: string;
+  imgUrl: string;
+  personType: string;
+}
 
-  const userInfo = await fetchUser(user.id);
-  if (!userInfo?.onboarded) redirect("/onboarding");
+function UserCard({ id, name, username, imgUrl, personType }: Props) {
+  const router = useRouter();
 
-  const result = await fetchCommunities({
-    searchString: searchParams.q,
-    pageNumber: searchParams?.page ? +searchParams.page : 1,
-    pageSize: 25,
-  });
+  const isCommunity = personType === "Community";
 
   return (
-    <>
-      <h1 className='head-text'>Communities</h1>
+    <article className='user-card'>
+      <div className='user-card_avatar'>
+        <div className='relative h-12 w-12'>
+          <Image
+            src={imgUrl}
+            alt='user_logo'
+            fill
+            className='rounded-full object-cover'
+          />
+        </div>
 
-      <div className='mt-5'>
-        <Searchbar routeType='communities' />
+        <div className='flex-1 text-ellipsis'>
+          <h4 className='text-base-semibold text-light-1'>{name}</h4>
+          <p className='text-small-medium text-gray-1'>@{username}</p>
+        </div>
       </div>
 
-      <section className='mt-9 flex flex-wrap gap-4'>
-        {result.communities.length === 0 ? (
-          <p className='no-result'>No Result</p>
-        ) : (
-          <>
-            {result.communities.map((community) => (
-              <CommunityCard
-                key={community.id}
-                id={community.id}
-                name={community.name}
-                username={community.username}
-                imgUrl={community.image}
-                bio={community.bio}
-                members={community.members}
-              />
-            ))}
-          </>
-        )}
-      </section>
-
-      <Pagination
-        path='communities'
-        pageNumber={searchParams?.page ? +searchParams.page : 1}
-        isNext={result.isNext}
-      />
-    </>
+      <Button
+        className='user-card_btn'
+        onClick={() => {
+          if (isCommunity) {
+            router.push(`/communities/${id}`);
+          } else {
+            router.push(`/profile/${id}`);
+          }
+        }}
+      >
+        View
+      </Button>
+    </article>
   );
 }
 
-export default Page;
+export default UserCard;

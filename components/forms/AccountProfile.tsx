@@ -22,7 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useUploadThing } from "@/lib/uploadthing";
 import { isBase64Image } from "@/lib/utils";
 
-import { UserValidation } from  "@/lib/validation/user";
+import { UserValidation } from "@/lib/validation/user";
 import { updateUser } from "@/lib/actions/user.actions";
 
 interface Props {
