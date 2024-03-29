@@ -43,3 +43,4 @@ function DeleteThread({
 }
 
 export default DeleteThread;
+// should work as intended
