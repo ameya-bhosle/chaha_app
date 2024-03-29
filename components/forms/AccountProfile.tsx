@@ -37,10 +37,6 @@ interface Props {
   btnTitle: string;
 }
 
-interface ClientUploadedFileData<T> {
-  fileUrl?: string;
-}
-
 const AccountProfile = ({ user, btnTitle }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -60,14 +56,10 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
 
   const onSubmit = async (values: z.infer<typeof UserValidation>) => {
     const blob = values.profile_photo;
-    
+
     const hasImageChanged = isBase64Image(blob);
     if (hasImageChanged) {
       const imgRes = await startUpload(files);
-
-      if (imgRes && imgRes[0].fileUrl) {
-        values.profile_photo = imgRes[0].fileUrl;
-      }
     }
 
     await updateUser({
